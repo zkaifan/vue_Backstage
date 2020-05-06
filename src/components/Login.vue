@@ -45,15 +45,31 @@ export default {
       // 表单验证规则
       loginFormRules: {
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 5, max: 10, message: "长度在 5 到 10 个字符", trigger: "blur" }
+          {
+            required: true,
+            message: "请输入用户名",
+            trigger: "blur"
+          },
+          {
+            min: 5,
+            max: 10,
+            message: "长度在 5 到 10 个字符",
+            trigger: "blur"
+          }
         ],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }]
+        password: [
+          {
+            required: true,
+            message: "请输入密码",
+            trigger: "blur"
+          }
+        ]
       }
     };
   },
   methods: {
     resetLoginForm() {
+      // 点击重置按钮，重置表单
       this.$refs.loginFormRef.resetFields();
       this.loginForm.username = "";
       this.loginForm.password = "";
@@ -65,7 +81,13 @@ export default {
         const { data: res } = await this.$http.post("login", this.loginForm);
         if (res.meta.status !== 200)
           return this.$message.error("用户名或密码错误");
-        console.log("登录成功");
+        this.$message.success("登录成功");
+        // 1、将登录成功之后的token，保存到客户端的sessionStorage中
+        //    1.1 项目中除了登录之外的其他API接口，必须在登录之后才能访问
+        //    1.2 token 只应在当前网站打开期间生效，所以将token保存在sessionStorage
+        // 2、通过编程式路由导航跳转到主页后台，地址是/home
+        window.sessionStorage.setItem("token", res.data.token);
+        this.$router.push("/home");
       });
     }
   }
